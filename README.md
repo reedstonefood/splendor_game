@@ -1,4 +1,4 @@
-# SplendorGame
+# Splendor_game
 
 A Ruby implementation of the board game Splendor. 
 
@@ -30,7 +30,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/reedst
 
 ## With thanks...
 
-WHoever typed up a list of all the cards in the box set into this spreadsheet... https://drive.google.com/file/d/0B4yyYVH10iE5VlBFME9QelBVUnc/edit
+Whoever typed up a list of all the cards in the box set into this spreadsheet... https://drive.google.com/file/d/0B4yyYVH10iE5VlBFME9QelBVUnc/edit
 
 ## License
 
