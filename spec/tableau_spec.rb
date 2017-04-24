@@ -12,7 +12,7 @@ describe SplendorGame::Tableau do
     expect(t.tokens).to be_empty
   end
   it "correctly models the maximum number of cards" do
-    expect(t.token_limit).to eq(10)
+    expect(t.token_space_remaining).to eq(10)
   end
   
   context "add a blue token" do
@@ -20,8 +20,8 @@ describe SplendorGame::Tableau do
     it "correctly reports the adding of a blue token" do
       expect(t.tokens).to eq ({:blue => 1})
     end
-    it "says it has 1 token total" do
-      expect(t.token_count).to eq (1)
+    it "says it has 9 tokens remaining" do
+      expect(t.token_space_remaining ).to eq (9)
     end
     it "says it is not empty" do
       expect(t.is_empty?).to eq (false)
@@ -70,6 +70,22 @@ describe SplendorGame::Tableau do
       expect(t.cards.size).to eq(1)
     end
     
+  end
+  
+  context "reserving cards" do
+    before :each do
+      t.reserve_card(SplendorGame::Card.new(1, :white, {:blue => 2, :green => 1}))
+      t.reserve_card(SplendorGame::Card.new(0, :white, {:red => 1, :green => 1}))
+    end
+    it "will let you reserve a third card" do
+      expect(t.can_reserve_card?).to eq(true)
+      t.reserve_card(SplendorGame::Card.new(2, :white, {:red => 5}))
+    end
+    it "will not let you reserve a fourth card" do
+      t.reserve_card(SplendorGame::Card.new(2, :white, {:red => 5}))
+      expect(t.can_reserve_card?).to eq(false)
+      expect(t.reserve_card(SplendorGame::Card.new(2, :white, {:red => 5}))).to eq(false)
+    end
   end
   
 end

@@ -1,5 +1,6 @@
 require "splendor_game/version"
 require "splendor_game/card"
+require "splendor_game/noble"
 require "splendor_game/tableau"
 require "splendor_game/player"
 require "splendor_game/load_cards"

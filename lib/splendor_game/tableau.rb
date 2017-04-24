@@ -3,7 +3,7 @@ module SplendorGame
  
   class Tableau
     @@max_reserved_cards = 3
-    attr_reader :cards, :tokens, :token_limit, :reserved_cards
+    attr_reader :cards, :tokens, :reserved_cards
     
     def initialize(token_limit = 10)
       @cards = Array.new()
@@ -12,6 +12,8 @@ module SplendorGame
       @token_limit = token_limit
       @reserved_cards = Array.new()
     end
+    
+    ### setup
     
     def seed_bank_non_gold(token_count)
       VALID_COLOUR_SYMBOLS.each do |colour|
@@ -22,6 +24,8 @@ module SplendorGame
     def seed_bank_gold(token_count)
       @tokens[:gold] = token_count
     end
+    
+    ### add tokens, remove tokens, counting tokens
     
     def add_token(token_colour)
       return false if !VALID_COLOUR_SYMBOLS.include? (token_colour)
@@ -45,22 +49,39 @@ module SplendorGame
       @tokens.inject(0) { |sum,(k,v)| sum + v }
     end
     
-    def purchase_card(card)
-      return false if tokens_required(card) == false
-      @cards << card
+    def token_space_remaining
+      return nil if @unlimited == true #meaning, undefined
+      @token_limit - token_count
     end
+    
+    def distinct_token_colour_count
+      @tokens.count { |k,v| v >0 }
+    end
+    
+    #### reserving cards
+    
+    def can_reserve_card?
+      return false if @reserved_cards.size >= @@max_reserved_cards
+      true
+    end
+
+    def reserve_card(card)
+      return false if !can_reserve_card?
+      @reserved_cards << card
+    end    
     
     def play_reserved_card(card)
       return false unless can_afford?(card)
       return false unless @reserved_cards.include? (card)
       @cards << card
       @reserved_cards.delete(card)
-      
     end
     
-    def reserve_card(card)
-      return false if @reserved_cards.size >= @@max_reserved_cards
-      @reserved_cards << card
+    ### related to purchasing cards
+      
+    def purchase_card(card)
+      return false if tokens_required(card) == false
+      @cards << card
     end
     
     # Returns a Hash of the tokens required to buy the card
@@ -81,12 +102,14 @@ module SplendorGame
     end
     
     
-    def is_empty?
-      @cards.size==0 && @tokens.size==0 ? true : false
-    end
-    
     def colours_on_cards(colour)
       @cards.inject(0) { |sum,card| sum + 1 if card.colour == colour }
+    end
+    
+    ### Other
+    
+    def is_empty?
+      @cards.size==0 && @tokens.size==0 ? true : false
     end
     
   end
