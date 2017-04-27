@@ -14,12 +14,15 @@ module SplendorGame
     @@starting_gold_tokens = 5
     @@starting_non_gold_tokens = { 2=> 4, 3=>5, 4=>7}
     @@nobles_available = { 2=> 3, 3=>4, 4=>5}
-    attr_reader :deck, :bank, :players, :nobles, :options
+    DISPLAY_CARDS_PER_ROW = 4
+    WINNING_SCORE = 15
+    attr_reader :deck, :bank, :players, :nobles, :options, :display
     def initialize(user_options = nil)
       @options = load_options(user_options)
       load_cards # puts all the cards into shuffled decks... a hash of arrays of cards. @deck[level]
       @bank = Tableau.new(0) # 0 means no limit on token capacity
       @players = Array.new()
+      @turns = Array.new()
     end
     
     #Take the user values if they are valid, else use defaults
@@ -50,13 +53,38 @@ module SplendorGame
       @players << Player.new(player_name, @players.count+1)
     end
     
+    def next_player
+      if !@turns.empty?
+        @players.rotate!
+        return @players.first
+      end
+      @players.shuffle!
+      @starting_player = @players.first
+    end
+    
+    def game_over?
+      return false if @players.map { |p| p.points }.max < WINNING_SCORE
+      return true if @players[1] == @starting_player
+      false
+    end
+    
     def start_game
       @bank.seed_bank_gold(@options[:starting_gold_tokens])
       @bank.seed_bank_non_gold(@@starting_non_gold_tokens[@players.count])
       #@bank.seed_bank_non_gold(@options[:starting_non_gold_tokens[@players.count]])
       #@nobles = noble_sample(@options[:nobles_available[@players.count]])
       @nobles = noble_sample(@@nobles_available[@players.count])
+      @display = Hash.new()
+      @deck.each { |level, subdeck| @display[level] = subdeck.pop(DISPLAY_CARDS_PER_ROW) }
     end
+    
+    def next_turn
+      return false if game_over? || !defined? @display
+      t = SplendorGame::Turn.new(self, next_player)
+      @turns << t
+      t
+    end
+    
     
   end
  

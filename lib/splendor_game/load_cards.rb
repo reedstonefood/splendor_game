@@ -9,6 +9,17 @@ module SplendorGame
       all_cards << Card.new(1, :white, {:black => 2, :blue => 2})
       all_cards << Card.new(1, :white, {:green => 4}, 1)
     
+      all_cards << Card.new(2, :blue, {:blue => 5}, 2)
+      all_cards << Card.new(2, :blue, {:blue => 6}, 3)
+      all_cards << Card.new(2, :blue, {:blue => 2, :green => 2, :red => 3}, 1)
+      all_cards << Card.new(2, :blue, {:white => 2, :red => 1, :black => 4}, 2)
+      all_cards << Card.new(2, :blue, {:blue => 2, :green => 3, :black => 3}, 1)
+      all_cards << Card.new(2, :blue, {:white => 5, :blue => 3}, 2)
+    
+      all_cards << Card.new(3, :green, {:blue => 7}, 4)
+      all_cards << Card.new(3, :green, {:blue => 7, :green => 3}, 5)
+      all_cards << Card.new(3, :green, {:white => 3, :blue => 6, :green => 3}, 4)
+      all_cards << Card.new(3, :green, {:white => 5, :blue => 3, :red => 3, :black => 3}, 3)
     
       # Now all cards are in all_cards, distribute them into all_cards
       @deck = Hash.new()
