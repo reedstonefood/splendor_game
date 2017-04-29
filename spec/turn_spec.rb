@@ -74,4 +74,36 @@ describe SplendorGame::Turn do
       expect(@g.bank.tokens[:red]).to eq(initial_reds-2)
     end
   end
+  context "pick three different tokens" do
+    it "won't let you if the colours aren't in the bank" do
+      while @g.bank.tokens[:green] > 0 do
+        @g.bank.remove_token(:green)
+      end
+      expect(@t.take_different_tokens([:green, :red, :blue])).to eq(false)
+    end
+    it "won't let you if two of the colours are the same" do
+      expect(@t.take_different_tokens([:green, :blue, :green])).to eq(false)
+    end
+    it "won't let you if you ask for more than 3 colours" do
+      expect(@t.take_different_tokens([:green, :red, :blue, :white])).to eq(false)
+    end
+    it "if request is valid, it works, gives player 3 tokens and takes 3 from the bank" do
+      inital_tokens = @g.bank.token_count
+      expect(@t.take_different_tokens([:green, :red, :blue])).not_to eq(false)
+      expect(@t.player.tableau.tokens.size).to eq(3)
+      expect(@t.player.tableau.tokens.size).to eq(inital_tokens-3)
+    end
+  end
+  context "action return tokens" do
+    it "won't let you return a colour you don't have" do
+      expect(@t.player.tableau.remove_token(:black)).to eq(false)
+    end
+    it "will let you return a colour you do have, and give correct totals" do
+      inital_tokens = @g.bank.token_count
+      @t.player.tableau.add_token(:black)
+      expect(@t.player.tableau.remove_token(:black)).not_to eq(false)
+      expect(@t.player.tableau.tokens.size).to eq(0)
+      expect(@t.player.tableau.tokens.size).to eq(inital_tokens+1)
+    end
+  end
 end

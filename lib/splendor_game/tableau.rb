@@ -30,7 +30,7 @@ module SplendorGame
     def add_token(token_colour)
       return false if !VALID_COLOUR_SYMBOLS.include? (token_colour)
       return false if !@unlimited && token_count >= @token_limit
-      if @tokens.include? (token_colour)
+      if @tokens.include?(token_colour)
         @tokens[token_colour] += 1
       else
         @tokens[token_colour] = 1
@@ -39,14 +39,14 @@ module SplendorGame
     end
     
     def remove_token(token_colour)
-      return false if !@tokens.key? (token_colour)
+      return false if !@tokens.key?(token_colour)
       return false if @tokens[token_colour] <= 0
       @tokens[token_colour] -= 1
       true
     end
     
     def token_count
-      @tokens.inject(0) { |sum,(k,v)| sum + v }
+      @tokens.inject(0) { |sum,(_k,v)| sum + v }
     end
     
     def token_space_remaining
@@ -55,7 +55,7 @@ module SplendorGame
     end
     
     def distinct_token_colour_count
-      @tokens.count { |k,v| v >0 }
+      @tokens.count { |_k,v| v >0 }
     end
     
     #### reserving cards
@@ -72,7 +72,7 @@ module SplendorGame
     
     def play_reserved_card(card)
       return false unless can_afford?(card)
-      return false unless @reserved_cards.include? (card)
+      return false unless @reserved_cards.include?(card)
       @cards << card
       @reserved_cards.delete(card)
     end

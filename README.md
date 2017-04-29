@@ -1,24 +1,14 @@
 # Splendor_game
 
+[![Code Climate](https://codeclimate.com/github/reedstonefood/splendor_game/badges/gpa.svg)](https://codeclimate.com/github/reedstonefood/splendor_game)
+
 A Ruby implementation of the board game Splendor. 
 
-Find out more about the game at [BoardGameGeek|https://boardgamegeek.com/boardgame/148228/splendor].
+Find out more about the game at [BoardGameGeek](https://boardgamegeek.com/boardgame/148228/splendor).
 
 ## Installation
 
-Add this line to your application's Gemfile:
-
-```ruby
-gem 'splendor_game'
-```
-
-And then execute:
-
-    $ bundle
-
-Or install it yourself as:
-
-    $ gem install splendor_game
+Not yet ready for use - still in development.
 
 ## Usage
 
@@ -30,7 +20,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/reedst
 
 ## With thanks...
 
-Whoever typed up a list of all the cards in the box set into this spreadsheet... https://drive.google.com/file/d/0B4yyYVH10iE5VlBFME9QelBVUnc/edit
+Whoever typed up a list of all the cards in the board game into this spreadsheet... https://drive.google.com/file/d/0B4yyYVH10iE5VlBFME9QelBVUnc/edit
 
 ## License
 

@@ -30,6 +30,6 @@ module SplendorGame
       end
     end
     
-	end
+  end
 
 end

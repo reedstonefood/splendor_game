@@ -68,11 +68,11 @@ module SplendorGame
     end
   
     def restock_display # make sure there are 4 cards showing from each deck, assuming there are any left
-      @game.deck.find_all {|level, subdeck|  @game.display[level].count < Game::DISPLAY_CARDS_PER_ROW }.each do |level2, subdeck2|
+      @game.deck.find_all {|_k, subdeck|  @game.display[level].count < Game::DISPLAY_CARDS_PER_ROW }.each do |level2, subdeck2|
         @game.display[level2] << subdeck2.pop if subdeck2.count > 0
       end
     end
     
-	end
+  end
 
 end
