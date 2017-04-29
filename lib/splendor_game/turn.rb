@@ -1,7 +1,7 @@
 module SplendorGame
   
   class Turn
-    attr_reader :player, :game
+    attr_reader :player
   
     def initialize(game, player)
       @game = game
@@ -19,13 +19,35 @@ module SplendorGame
     end
     
     def purchase_card(card) # do the requisite card/token changes, if the card is in affordable_cards
-  
+      cost_to_player = @player.tableau.tokens_required(card)
+      return false if !cost_to_player
+      return false if !@game.display.flatten(2).include? (card)
+      @player.tableau.purchase_card(card)
+      cost_to_player.each do |colour, val|
+        val.times { @player.tableau.remove_token(colour) }
+        val.times { @game.bank.add_token(colour) }
+      end
+      display_row = @game.display[card.level]
+      display_row.delete_at(display_row.index(card) || display_row.length)
     end
     
     def reserve_card(card) # put cards in to player's reserved set. Remove card from display
+      return false if !@player.tableau.can_reserve_card?
+      return false if !@game.display.flatten(2).include? (card)
+      @player.tableau.reserve_card(card)
+      display_row = @game.display[card.level]
+      display_row.delete_at(display_row.index(card) || display_row.length)
+      if @game.bank.tokens[:gold] > 0 && @player.tableau.token_space_remaining>0
+        @game.bank.remove_token(:gold)
+        @player.tableau.add_token(:gold)
+      end
+      true
     end
     
-    def take_two_tokens_same_colour(colour) # does what it says on the tin
+    def take_two_tokens_same_colour(colour)
+      return false if @game.bank.tokens[colour] < @game.options[:min_to_take_two]
+      2.times { @player.tableau.add_token(colour) }
+      2.times { @game.bank.remove_token(colour) }
     end
   
     def take_different_tokens(colours)

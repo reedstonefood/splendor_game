@@ -16,6 +16,7 @@ module SplendorGame
     @@nobles_available = { 2=> 3, 3=>4, 4=>5}
     DISPLAY_CARDS_PER_ROW = 4
     WINNING_SCORE = 15
+    MIN_TO_TAKE_TWO = 4
     attr_reader :deck, :bank, :players, :nobles, :options, :display
     def initialize(user_options = nil)
       @options = load_options(user_options)
@@ -29,6 +30,7 @@ module SplendorGame
     def load_options(user_options)
       user_options = Hash.new() if user_options.nil?
       options = user_options
+      options[:min_to_take_two] = MIN_TO_TAKE_TWO
       options[:starting_gold_tokens] = @@starting_gold_tokens if user_options[:starting_gold_tokens].nil?
       options[:starting_gold_tokens] = @@starting_gold_tokens if !user_options[:starting_gold_tokens].is_natural_number?
       if user_options[:nobles_available].nil? || !user_options[:nobles_available].is_a?(Hash)
