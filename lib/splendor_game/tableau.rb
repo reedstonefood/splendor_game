@@ -103,7 +103,7 @@ module SplendorGame
     
     
     def colours_on_cards(colour)
-      @cards.inject(0) { |sum,card| sum + 1 if card.colour == colour }
+      @cards.inject(0) { |sum,card| card.colour == colour ? sum+1 : sum }.to_i
     end
     
     ### Other

@@ -51,7 +51,14 @@ module SplendorGame
     end
   
     def take_different_tokens(colours)
-    
+      return false if colours.class.name!='Array'
+      return false if colours.count != 3
+      return false if colours.uniq.length != colours.length
+      return false if colours.select { |c| @game.bank.tokens[c]==0}.length > 0
+      colours.each do |c|
+        @player.tableau.add_token(c)
+        @game.bank.remove_token(c)
+      end
     end
   
     # in order to claim tokens you may need to return tokens, eg pick up a gold when 
@@ -60,11 +67,22 @@ module SplendorGame
     end
     
 
-    def action_return_token # actually returns tokens as shown in prepare_return_token
+    def action_return_token(colour) # actually returns tokens as shown in prepare_return_token
+      return false if !@player.tableau.tokens.include?(colour) 
+      return false if @player.tableau.tokens[colour] <= 0
+      @player.tableau.remove_token(colour)
+      @game.bank.add_token(colour)
     end
   
     def claim_noble(noble) # Move noble from bank to player, assuming it's affordable
-  
+      return false if !@game.nobles.include?(noble)
+      return false if noble.class.name!='SplendorGame::Noble'
+      noble.cost.each do |c,v|
+        return false if @player.tableau.colours_on_cards(c) < v
+      end
+      @game.nobles.delete_at(@game.nobles.index(noble) || display_row.length)
+      @player.nobles << noble
+      true
     end
   
     def restock_display # make sure there are 4 cards showing from each deck, assuming there are any left

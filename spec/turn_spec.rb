@@ -90,20 +90,47 @@ describe SplendorGame::Turn do
     it "if request is valid, it works, gives player 3 tokens and takes 3 from the bank" do
       inital_tokens = @g.bank.token_count
       expect(@t.take_different_tokens([:green, :red, :blue])).not_to eq(false)
-      expect(@t.player.tableau.tokens.size).to eq(3)
-      expect(@t.player.tableau.tokens.size).to eq(inital_tokens-3)
+      expect(@t.player.tableau.token_count).to eq(3)
+      expect(@g.bank.token_count).to eq(inital_tokens-3)
     end
   end
   context "action return tokens" do
     it "won't let you return a colour you don't have" do
-      expect(@t.player.tableau.remove_token(:black)).to eq(false)
+      expect(@t.action_return_token(:black)).to eq(false)
     end
     it "will let you return a colour you do have, and give correct totals" do
       inital_tokens = @g.bank.token_count
       @t.player.tableau.add_token(:black)
-      expect(@t.player.tableau.remove_token(:black)).not_to eq(false)
-      expect(@t.player.tableau.tokens.size).to eq(0)
-      expect(@t.player.tableau.tokens.size).to eq(inital_tokens+1)
+      expect(@t.action_return_token(:black)).not_to eq(false)
+      expect(@t.player.tableau.token_count).to eq(0)
+      expect(@g.bank.token_count).to eq(inital_tokens+1)
+    end
+  end
+  context "claim noble" do
+    it "won't let you claim one at the start as you have 0 cards" do
+      expect(@t.claim_noble(@g.nobles[0])).to eq(false)
+    end
+    context "if you can afford it" do
+      before :each do
+        cost = @g.nobles[0].cost
+        cost.each do |c, v|
+          v.times { @t.player.tableau.add_token(:red) }
+          v.times { @t.player.tableau.purchase_card(SplendorGame::Card.new(1, c.to_sym, {:red=>1})) }
+        end
+      end
+      it "should have loaded some cards into your tableau" do
+        expect(@t.player.tableau.cards.count).not_to eq(0)
+      end
+      it "it lets you buy one" do
+        expect(@t.claim_noble(@g.nobles[0])).not_to eq(false)
+      end
+      it "player's score and size of nobles have increased accordingly" do
+        nobles_available = @g.nobles.count
+        expect(@t.claim_noble(@g.nobles[0])).not_to eq(false)
+        expect(@t.player.nobles.count).to eq(1)
+        expect(@t.player.points).to eq(@t.player.nobles[0].points)
+        expect(@g.nobles.count).to eq(nobles_available-1)
+      end
     end
   end
 end
