@@ -28,7 +28,7 @@ module SplendorGame
     ### add tokens, remove tokens, counting tokens
     
     def add_token(token_colour)
-      return false if !VALID_COLOUR_SYMBOLS.include? (token_colour)
+      return false if !VALID_COLOUR_SYMBOLS.include?(token_colour)
       return false if !@unlimited && token_count >= @token_limit
       if @tokens.include?(token_colour)
         @tokens[token_colour] += 1

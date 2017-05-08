@@ -35,7 +35,7 @@ describe SplendorGame::Game do
     it "next turn returns a Turn" do
       expect(g.next_turn).to be_a_kind_of(SplendorGame::Turn)
     end
-    it "display is ???" do
+    it "display is a hash" do
       expect(g.display).to be_a_kind_of(Hash)
     end
   end

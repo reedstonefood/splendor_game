@@ -1,4 +1,6 @@
 require "splendor_game/version"
+require "splendor_game/options"
+require "splendor_game/coloured_object"
 require "splendor_game/card"
 require "splendor_game/noble"
 require "splendor_game/tableau"
@@ -17,5 +19,5 @@ module SplendorGame
   VALID_COLOUR_SYMBOLS << :gold
   
   MAX_PLAYER_COUNT = 4
-  
+  MIN_PLAYER_COUNT = 2
 end

@@ -1,6 +1,6 @@
 module SplendorGame
   
-  class Card
+  class Card < ColouredObject
     attr_reader :level, :points, :colour, :cost
   
     def initialize(level, colour, cost, points = 0)
@@ -16,17 +16,6 @@ module SplendorGame
         else
           @cost[new_key_name] = value
         end
-      end
-    end
-    
-    private
-    # format any inputted colours to the downcase symbol version
-    # return false if an invalid input is passed in
-    def validate_colour(input)
-      if VALID_COLOUR_LIST.include? (input.to_s.upcase)
-        input.downcase.to_sym
-      else 
-        false
       end
     end
     
