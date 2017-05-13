@@ -11,9 +11,6 @@ module SplendorGame
 
 
   class Game
-    @@starting_gold_tokens = 5
-    @@starting_non_gold_tokens = { 2=> 4, 3=>5, 4=>7}
-    @@nobles_available = { 2=> 3, 3=>4, 4=>5}
     DISPLAY_CARDS_PER_ROW = 4
     WINNING_SCORE = 15
     MIN_TO_TAKE_TWO = 4
@@ -29,6 +26,7 @@ module SplendorGame
     def add_player(player_name)
       return false if @players.count >= MAX_PLAYER_COUNT
       @players << Player.new(player_name, @players.count+1)
+      true
     end
     
     def next_player

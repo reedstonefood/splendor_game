@@ -8,7 +8,7 @@ require "splendor_game/player"
 require "splendor_game/turn"
 require "splendor_game/load_cards"
 require "splendor_game/game"
-
+require "splendor_game/cli"
 
 module SplendorGame
   # This is to validate when loading cards
