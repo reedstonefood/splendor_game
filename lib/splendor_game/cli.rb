@@ -17,7 +17,7 @@ module SplendorGame
       @@cli.say "Name all the players. Input 'done' when you are done."
       loop do
         pname = @@cli.ask("Enter name of player #{count} > ") do |q| 
-          q.validate = lambda { |a| a.length >= 1 && a.length <= 30 }
+          q.validate = lambda { |a| a.length >= 1 && a.length <= 19 }
         end
         if pname.downcase == 'done'
           break if count > MIN_PLAYER_COUNT
@@ -39,7 +39,7 @@ module SplendorGame
       @@cli.say "<%= color('(r)eserve', BOLD) %> = Reserve a card"
       @@cli.say "<%= color('(t)okens', BOLD) %> = pick up tokens from the bank"
       @@cli.say "<%= color('(h)elp', BOLD) %> = This help page"
-      @@cli.say "<%= color('e(x)it', BOLD) %> = Exit the program (doesn't work yet)"
+      @@cli.say "<%= color('e(x)it', BOLD) %> = Exit the program"
     end
     
     def full_display
@@ -51,25 +51,52 @@ module SplendorGame
       end
     end
     
+    #practicing using args rather than fixed list of parameters
+    def purchase_card(args)
+      if args[:turn].purchase_card(args[:card])
+        true
+      else
+        @@cli.say "Oops, you can't afford that"
+      end
+    end
+    
+    def reserve_card(args)
+      if args[:turn].reserve_card(args[:card])
+        true
+      else
+        @@cli.say "Sorry, you can't reserve that (maybe you have reserved too many cards)"
+      end
+    end
+    
     def do_turn(turn)
       turn_complete = false
       while turn_complete == false
-        full_display
+        #full_display
+        @@cli.say player_details(turn.player)
         input = @@cli.ask "What do you want to do, <%= color('#{turn.player.name}', BOLD) %>? "
         command = parse_command(input.downcase)
         if !command
           @@cli.say "Sorry, I did not understand that. Press h for help"
         elsif command==:buy || command==:reserve
-          if !card = choose_card(command)
-            turn.purchase_card(card) if command==:buy
-            turn.reserve_card(card) if command==:reserve
-            turn_complete = true
+          card = choose_card(command)
+          if !(card==:cancel)
+            if command==:buy
+              turn_complete=true if purchase_card(:card => card, :turn => turn)
+            end
+            if command==:reserve
+              turn_complete=true if reserve_card(:card => card, :turn => turn)
+            end
+            #TODO, what if we are reserving a random card?
           end
         elsif command==:tokens
-          @@cli.say "You chose tokens (not yet coded)"
+          @@cli.say bank_details + " "
+          turn_complete=true if take_tokens(turn)
+        elsif command==:exit
+          turn_complete=true
         end
       end
       @@cli.say "*** END OF TURN***"
+      command==:exit ? false : true
     end
     
     def parse_command(input)
@@ -82,6 +109,8 @@ module SplendorGame
         help
       when input[0]=='t'
         return :tokens
+      when input[0]=='x'
+        return :exit
       else
         return false
       end
@@ -96,23 +125,64 @@ module SplendorGame
       text[0..-3]
     end
     
+    def player_details(player)
+      str = "#{player.name.ljust(19)}: #{player.points.to_s.ljust(2)}pts. "
+      reserved_card_count = player.tableau.reserved_cards.count
+      str << "(#{reserved_card_count}R) " if reserved_card_count > 0
+      str << "Cards: "
+      player.tableau.all_colours_on_cards.sort.to_h.each do |colour, count|
+        str << "#{colour}=#{count} " if count > 0
+      end
+      str << "Tokens: "
+      player.tableau.tokens.sort.to_h.each do |colour,count|
+        str << "#{colour}=#{count} " if count > 0
+      end
+      str[0..-2]
+    end
+    
+    def bank_details
+      str = "Bank tokens = "
+      @g.bank.tokens.sort.to_h.each do |colour, count|
+        str << "#{colour}=#{count} " if count > 0
+      end
+      str
+    end
+    
     def choose_card(mode)
-      displayed_cards_list = @g.display.values.flatten.collect { |c| card_display(c) }
+      displayed_cards_list = @g.all_displayed_cards.collect { |c| [card_display(c),c] }.to_h
+      if mode==:reserve
+        (1..3).each { |i| displayed_cards_list["Reserve mystery level #{i} card"]= i }
+      end
       @@cli.choose do |menu|
         menu.prompt = "Which card do you want to #{mode}? "
-        menu.choices(*displayed_cards_list) do |chosen|
+        menu.choices(*displayed_cards_list.keys) do |chosen|
           @@cli.say "Nice, you chose #{chosen}."
-          @g.display.values.flatten.find { |c| card_display(c)==chosen }
+          displayed_cards_list[chosen]
         end
         menu.choice(:cancel) { false }
       end
     end
     
+    def validate_token_choice(t)
+      return false if t.count < 2 || t.count > 3
+      t.each { |c| return false if !VALID_COLOUR_SYMBOLS.include?(c.upcase) || c==:gold}
+      return false if t.count==2 && t[0] != t[1]
+      true
+    end
     
-    
+    def take_tokens(turn)
+      input = @@cli.ask "Which tokens would you like (CSV format)? "
+      requested_tokens = input.split(",")
+      return false if !validate_token_choice(requested_tokens)
+      if requested_tokens.count==2
+        turn.take_two_tokens_same_colour(requested_tokens[0])
+      elsif requested_tokens.count==3
+        turn.take_different_tokens(requested_tokens)
+      end
+    end
     
     def end_game_detail
-      @@cli.say "The game consisted of #{g.turns.count} turns"
+      @@cli.say "The game consisted of #{@g.turns.count} turns"
       @@cli.ask "It's the end of the game. Press enter to end the program."
       @@cli.say "Goodbye!"
     end
@@ -123,7 +193,8 @@ module SplendorGame
       catch :exit do
         loop do
           turn = @g.next_turn
-          throw :exit if !do_turn(turn) # or @exit_flag==true ??
+          throw :exit if turn===false # or @exit_flag==true ??
+          throw :exit if !do_turn(turn) 
         end #end of the game - only reachable by throwing an :exit
       end
       end_game_detail

@@ -59,6 +59,9 @@ module SplendorGame
       t
     end
     
+    def all_displayed_cards
+      @display.values.flatten
+    end
     
   end
  

@@ -101,6 +101,11 @@ module SplendorGame
       answer
     end
     
+    def all_colours_on_cards
+      output = Hash.new()
+      VALID_COLOUR_LIST.each { |c| output[c] = colours_on_cards(c) }
+      output
+    end
     
     def colours_on_cards(colour)
       @cards.inject(0) { |sum,card| card.colour == colour ? sum+1 : sum }.to_i
