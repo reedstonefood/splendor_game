@@ -11,9 +11,9 @@ module SplendorGame
 
 
   class Game
-    DISPLAY_CARDS_PER_ROW = 4
-    WINNING_SCORE = 15
-    MIN_TO_TAKE_TWO = 4
+    #DISPLAY_CARDS_PER_ROW = 4
+    #WINNING_SCORE = 15
+    #MIN_TO_TAKE_TWO = 4
     attr_reader :deck, :bank, :players, :nobles, :options, :display, :turns
     def initialize(user_options = nil)
       @options = Options.new(user_options).give_options
@@ -39,7 +39,7 @@ module SplendorGame
     end
     
     def game_over?
-      return false if @players.map { |p| p.points }.max < WINNING_SCORE
+      return false if @players.map { |p| p.points }.max < @options[:winning_score]
       return true if @players[1] == @starting_player
       false
     end
@@ -49,7 +49,7 @@ module SplendorGame
       @bank.seed_bank_non_gold(@options[:starting_non_gold_tokens][@players.count])
       @nobles = noble_sample(@options[:nobles_available][@players.count])
       @display = Hash.new()
-      @deck.each { |level, subdeck| @display[level] = subdeck.pop(DISPLAY_CARDS_PER_ROW) }
+      @deck.each { |level, subdeck| @display[level] = subdeck.pop(@options[:display_cards_per_row]) }
     end
     
     def next_turn

@@ -38,7 +38,7 @@ describe SplendorGame::Turn do
       expect(@t.player.tableau.reserved_cards.count).to eq(1)
     end
     it "leaves a gap in the cards on display" do
-      expect(@g.display[1].count).to eq(SplendorGame::Game::DISPLAY_CARDS_PER_ROW-1)
+      expect(@g.display[1].count).to eq(@g.options[:display_cards_per_row]-1)
     end
   end
   context "purchase card" do
@@ -55,7 +55,7 @@ describe SplendorGame::Turn do
       it "will mean the player has 1 card and there's a gap in the display" do
         expect(@t.purchase_card(@g.display[1][0])).not_to eq(false)
         expect(@t.player.tableau.cards.size).to eq(1)
-        expect(@g.display[1].count).to eq(SplendorGame::Game::DISPLAY_CARDS_PER_ROW-1)
+        expect(@g.display[1].count).to eq(@g.options[:display_cards_per_row]-1)
         
       end
     end

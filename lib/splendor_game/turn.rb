@@ -50,6 +50,7 @@ module SplendorGame
     end
     
     def take_two_tokens_same_colour(colour)
+      colour = colour.to_sym
       return false if @action_done
       return false if @game.bank.tokens[colour] < @game.options[:min_to_take_two]
       2.times { @player.tableau.add_token(colour) }
@@ -60,8 +61,10 @@ module SplendorGame
     def take_different_tokens(colours)
       return false if @action_done
       return false if colours.class.name!='Array'
+      colours.map!{|c| c.to_sym}
       return false if colours.count != 3
       return false if colours.uniq.length != colours.length
+      return false if colours.include?(:gold)
       return false if colours.select { |c| @game.bank.tokens[c]==0}.length > 0
       colours.each do |c|
         @player.tableau.add_token(c)

@@ -103,7 +103,7 @@ module SplendorGame
     
     def all_colours_on_cards
       output = Hash.new()
-      VALID_COLOUR_LIST.each { |c| output[c] = colours_on_cards(c) }
+      VALID_COLOUR_SYMBOLS.each { |c| output[c] = colours_on_cards(c) if colours_on_cards(c) > 0 }
       output
     end
     

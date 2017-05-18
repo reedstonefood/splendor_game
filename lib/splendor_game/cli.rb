@@ -12,7 +12,7 @@ module SplendorGame
       main
     end
     
-   def choose_players
+    def choose_players
       count = 1 
       @@cli.say "Name all the players. Input 'done' when you are done."
       loop do
@@ -69,32 +69,33 @@ module SplendorGame
     end
     
     def do_turn(turn)
-      turn_complete = false
-      while turn_complete == false
+      while turn.action_done == false
+      #while !turn.action_done
         #full_display
-        @@cli.say player_details(turn.player)
+        output_all_player_details(turn.player)
         input = @@cli.ask "What do you want to do, <%= color('#{turn.player.name}', BOLD) %>? "
         command = parse_command(input.downcase)
         if !command
           @@cli.say "Sorry, I did not understand that. Press h for help"
         elsif command==:buy || command==:reserve
           card = choose_card(command)
-          if !(card==:cancel)
+          if card
             if command==:buy
-              turn_complete=true if purchase_card(:card => card, :turn => turn)
+              if purchase_card(:card => card, :turn => turn)
             end
             if command==:reserve
-              turn_complete=true if reserve_card(:card => card, :turn => turn)
+              if reserve_card(:card => card, :turn => turn)
             end
             #TODO, what if we are reserving a random card?
           end
         elsif command==:tokens
           @@cli.say bank_details + " "
-          turn_complete=true if take_tokens(turn)
+          take_tokens(turn)
         elsif command==:exit
-          turn_complete=true
+          break
         end
       end
+      #TODO nobles....
       @@cli.say "*** END OF TURN***"
       command==:exit ? false : true
     end
@@ -125,11 +126,24 @@ module SplendorGame
       text[0..-3]
     end
     
+    def output_all_player_details(highlighted_player=nil)
+      @g.players.each do |p|
+        if p==highlighted_player
+          str = "<%= color('"
+          str << player_details(p)
+          str << "', BOLD) %>"
+        else
+          str = player_details(p)
+        end
+        @@cli.say str
+      end
+     end
+    
     def player_details(player)
       str = "#{player.name.ljust(19)}: #{player.points.to_s.ljust(2)}pts. "
       reserved_card_count = player.tableau.reserved_cards.count
       str << "(#{reserved_card_count}R) " if reserved_card_count > 0
-      str << "Cards: "
+      str << "Cards (#{player.tableau.cards.count}): "
       player.tableau.all_colours_on_cards.sort.to_h.each do |colour, count|
         str << "#{colour}=#{count} " if count > 0
       end
@@ -153,13 +167,14 @@ module SplendorGame
       if mode==:reserve
         (1..3).each { |i| displayed_cards_list["Reserve mystery level #{i} card"]= i }
       end
+      ## TODO give the option to play a reserved card
       @@cli.choose do |menu|
         menu.prompt = "Which card do you want to #{mode}? "
         menu.choices(*displayed_cards_list.keys) do |chosen|
           @@cli.say "Nice, you chose #{chosen}."
           displayed_cards_list[chosen]
         end
-        menu.choice(:cancel) { false }
+        menu.choice(:cancel) { return false }
       end
     end
     
@@ -173,7 +188,7 @@ module SplendorGame
     def take_tokens(turn)
       input = @@cli.ask "Which tokens would you like (CSV format)? "
       requested_tokens = input.split(",")
-      return false if !validate_token_choice(requested_tokens)
+      #return false if !validate_token_choice(requested_tokens)
       if requested_tokens.count==2
         turn.take_two_tokens_same_colour(requested_tokens[0])
       elsif requested_tokens.count==3

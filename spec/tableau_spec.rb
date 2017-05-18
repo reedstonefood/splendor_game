@@ -75,6 +75,12 @@ describe SplendorGame::Tableau do
       expect(t.purchase_card(c)).not_to eq(false)
       expect(t.colours_on_cards(:white)).to eq(1)
     end
+    it "tells you you have 1 white card in if you ask for all your cards" do
+      t.add_token(:blue)
+      expect(t.tokens_required(c)).to eq({:blue => 2, :green => 1})
+      expect(t.purchase_card(c)).not_to eq(false)
+      expect(t.all_colours_on_cards).to eq({:white => 1})
+    end
     
   end
   
