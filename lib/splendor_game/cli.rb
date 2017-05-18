@@ -70,8 +70,6 @@ module SplendorGame
     
     def do_turn(turn)
       while turn.action_done == false
-      #while !turn.action_done
-        #full_display
         output_all_player_details(turn.player)
         input = @@cli.ask "What do you want to do, <%= color('#{turn.player.name}', BOLD) %>? "
         command = parse_command(input.downcase)
@@ -81,10 +79,10 @@ module SplendorGame
           card = choose_card(command)
           if card
             if command==:buy
-              if purchase_card(:card => card, :turn => turn)
+              purchase_card(:card => card, :turn => turn)
             end
             if command==:reserve
-              if reserve_card(:card => card, :turn => turn)
+              reserve_card(:card => card, :turn => turn)
             end
             #TODO, what if we are reserving a random card?
           end
