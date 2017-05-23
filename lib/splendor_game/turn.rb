@@ -13,19 +13,22 @@ module SplendorGame
     #from the 12 cards on display plus up to 3 reserved ones, return the ones affordable, in an Array
     def affordable_cards
       answer = Array.new()
-      (@game.display.values.flatten + @player.tableau.reserved_cards).each do |card|
+      (@game.all_displayed_cards + @player.tableau.reserved_cards).each do |card|
         @cost = @player.tableau.tokens_required(card)
-        answer << @cost if !@cost==false
+        answer << card if !@cost==false
       end
       answer
     end
     
     def purchase_card(card) # do the requisite card/token changes, if the card is in affordable_cards
       return false if @action_done
+      return false if !affordable_cards.include?(card)
       cost_to_player = @player.tableau.tokens_required(card)
-      return false if !cost_to_player
-      return false if !@game.display.flatten(2).include?(card)
-      @player.tableau.purchase_card(card)
+      if @player.tableau.reserved_cards.include?(card)
+        @player.tableau.play_reserved_card(card)
+      else
+        @player.tableau.purchase_card(card)
+      end
       cost_to_player.each do |colour, val|
         val.times { @player.tableau.remove_token(colour) }
         val.times { @game.bank.add_token(colour) }
@@ -42,16 +45,22 @@ module SplendorGame
       @player.tableau.reserve_card(card)
       display_row = @game.display[card.level]
       display_row.delete_at(display_row.index(card) || display_row.length)
-      if @game.bank.tokens[:gold] > 0 && @player.tableau.token_space_remaining>0
+      if @game.bank.tokens[:gold] > 0 && @player.tableau.token_space_remaining > 0
         @game.bank.remove_token(:gold)
         @player.tableau.add_token(:gold)
       end
       @action_done = true
     end
     
+    def validate_token_pickup?(colour)
+      return false if @action_done
+      return false if Array(colour).include?(:gold)
+      true
+    end
+    
     def take_two_tokens_same_colour(colour)
       colour = colour.to_sym
-      return false if @action_done
+      return false if !validate_token_pickup?(colour)
       return false if @game.bank.tokens[colour] < @game.options[:min_to_take_two]
       2.times { @player.tableau.add_token(colour) }
       2.times { @game.bank.remove_token(colour) }
@@ -59,12 +68,10 @@ module SplendorGame
     end
   
     def take_different_tokens(colours)
-      return false if @action_done
-      return false if colours.class.name!='Array'
       colours.map!{|c| c.to_sym}
+      return false if !validate_token_pickup?(colours)
       return false if colours.count != 3
       return false if colours.uniq.length != colours.length
-      return false if colours.include?(:gold)
       return false if colours.select { |c| @game.bank.tokens[c]==0}.length > 0
       colours.each do |c|
         @player.tableau.add_token(c)

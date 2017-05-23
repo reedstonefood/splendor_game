@@ -13,16 +13,9 @@ module SplendorGame
       @reserved_cards = Array.new()
     end
     
-    ### setup
-    
-    def seed_bank_non_gold(token_count)
-      VALID_COLOUR_SYMBOLS.each do |colour|
-        @tokens[colour] = token_count if colour != :gold
-      end
-    end
-    
-    def seed_bank_gold(token_count)
-      @tokens[:gold] = token_count
+    def seed_bank(args)
+      seed_bank_non_gold(args[:options][:starting_non_gold_tokens][args[:player_count]])
+      seed_bank_gold(args[:options][:starting_gold_tokens])
     end
     
     ### add tokens, remove tokens, counting tokens
@@ -71,7 +64,7 @@ module SplendorGame
     end    
     
     def play_reserved_card(card)
-      return false unless can_afford?(card)
+      return false if tokens_required(card) == false
       return false unless @reserved_cards.include?(card)
       @cards << card
       @reserved_cards.delete(card)
@@ -115,6 +108,19 @@ module SplendorGame
     
     def is_empty?
       @cards.size==0 && @tokens.size==0 ? true : false
+    end
+    
+    ### setup
+    private
+    
+    def seed_bank_non_gold(token_count)
+      VALID_COLOUR_SYMBOLS.each do |colour|
+        @tokens[colour] = token_count if colour != :gold
+      end
+    end
+    
+    def seed_bank_gold(token_count)
+      @tokens[:gold] = token_count
     end
     
   end

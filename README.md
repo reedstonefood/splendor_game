@@ -12,7 +12,14 @@ Not yet ready for use - still in development.
 
 ## Usage
 
-There is likely to be a simple CLI - others are welcome to add a GUI to this.
+There is a simple CLI you can use. Simply run the following in irb or put in a .rb file and run it.
+
+```ruby
+require 'splendor_game'
+SplendorGame::CLI.new
+```
+
+Or, hook this up to any front end you might desire to use.
 
 ## Contributing
 

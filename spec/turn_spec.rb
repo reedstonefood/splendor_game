@@ -23,7 +23,7 @@ describe SplendorGame::Turn do
       expect(@t.player.tableau.add_token(:gold)).to eq(true)
       expect(@t.player.tableau.tokens).to eq({:white =>1, :gold =>1})
       expect(@t.affordable_cards).to be_a_kind_of(Array)
-      expect(@t.affordable_cards).to all(be_a_kind_of(Hash))
+      expect(@t.affordable_cards).to all(be_a_kind_of(SplendorGame::Card))
       expect(@t.affordable_cards.count).to eq(2)
     end
   end

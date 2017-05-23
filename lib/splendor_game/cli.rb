@@ -33,7 +33,7 @@ module SplendorGame
       @@cli.say "Succesfully added #{count-1} players. Game is ready to start."
     end
     
-    def help
+    def puts_help
       @@cli.say "************************ HELP! ************************"
       @@cli.say "<%= color('(b)uy', BOLD) %> = Buy a card"
       @@cli.say "<%= color('(r)eserve', BOLD) %> = Reserve a card"
@@ -53,6 +53,8 @@ module SplendorGame
     
     #practicing using args rather than fixed list of parameters
     def purchase_card(args)
+      #if args[:turn].player.tableau.reserved_cards.include?(args[:card])
+      #  args[:turn].reserve_card
       if args[:turn].purchase_card(args[:card])
         true
       else
@@ -72,42 +74,31 @@ module SplendorGame
       while turn.action_done == false
         output_all_player_details(turn.player)
         input = @@cli.ask "What do you want to do, <%= color('#{turn.player.name}', BOLD) %>? "
-        command = parse_command(input.downcase)
-        if !command
+        command_result = process_command(input.downcase, turn)
+        if !command_result
           @@cli.say "Sorry, I did not understand that. Press h for help"
-        elsif command==:buy || command==:reserve
-          card = choose_card(command)
-          if card
-            if command==:buy
-              purchase_card(:card => card, :turn => turn)
-            end
-            if command==:reserve
-              reserve_card(:card => card, :turn => turn)
-            end
-            #TODO, what if we are reserving a random card?
-          end
-        elsif command==:tokens
-          @@cli.say bank_details + " "
-          take_tokens(turn)
-        elsif command==:exit
+        elsif command_result==:exit
           break
         end
       end
       #TODO nobles....
       @@cli.say "*** END OF TURN***"
-      command==:exit ? false : true
+      command_result==:exit ? false : true
     end
     
-    def parse_command(input)
+    def process_command(input, turn)
       case
       when input[0]=='b'
-        return :buy
+        card = choose_card(:buy, turn.player)
+        purchase_card(:card => card, :turn => turn) if card
       when input[0]=='r'
-        return :reserve
+        card = choose_card(:reserve, turn.player)
+        reserve_card(:card => card, :turn => turn) if card
       when input[0]=='h'
-        help
+        puts_help
       when input[0]=='t'
-        return :tokens
+        @@cli.say bank_details + " "
+        take_tokens(turn)
       when input[0]=='x'
         return :exit
       else
@@ -115,6 +106,7 @@ module SplendorGame
       end
       true
     end
+    
     
     def card_display(card)
       text = "#{card.points}pts (#{card.colour}) => "
@@ -135,7 +127,7 @@ module SplendorGame
         end
         @@cli.say str
       end
-     end
+    end
     
     def player_details(player)
       str = "#{player.name.ljust(19)}: #{player.points.to_s.ljust(2)}pts. "
@@ -160,12 +152,15 @@ module SplendorGame
       str
     end
     
-    def choose_card(mode)
+    def choose_card(mode, player = nil)
       displayed_cards_list = @g.all_displayed_cards.collect { |c| [card_display(c),c] }.to_h
+      #TODO this is just a placeholder... you cannot currently reserve a random card
       if mode==:reserve
         (1..3).each { |i| displayed_cards_list["Reserve mystery level #{i} card"]= i }
       end
-      ## TODO give the option to play a reserved card
+      if mode==:buy
+        player.tableau.reserved_cards.each { |c| displayed_cards_list["R1 - #{card_display(c)}"]= c }
+      end
       @@cli.choose do |menu|
         menu.prompt = "Which card do you want to #{mode}? "
         menu.choices(*displayed_cards_list.keys) do |chosen|
@@ -177,7 +172,7 @@ module SplendorGame
     end
     
     def validate_token_choice(t)
-      return false if t.count < 2 || t.count > 3
+      return false if [2,3].include?(t.count)
       t.each { |c| return false if !VALID_COLOUR_SYMBOLS.include?(c.upcase) || c==:gold}
       return false if t.count==2 && t[0] != t[1]
       true
@@ -188,10 +183,11 @@ module SplendorGame
       requested_tokens = input.split(",")
       #return false if !validate_token_choice(requested_tokens)
       if requested_tokens.count==2
-        turn.take_two_tokens_same_colour(requested_tokens[0])
+        response = turn.take_two_tokens_same_colour(requested_tokens[0])
       elsif requested_tokens.count==3
-        turn.take_different_tokens(requested_tokens)
+        response = turn.take_different_tokens(requested_tokens)
       end
+      @@cli.say "Oops, that's not a valid selection" if !response
     end
     
     def end_game_detail

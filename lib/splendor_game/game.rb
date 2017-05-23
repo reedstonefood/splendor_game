@@ -45,8 +45,7 @@ module SplendorGame
     end
     
     def start_game
-      @bank.seed_bank_gold(@options[:starting_gold_tokens])
-      @bank.seed_bank_non_gold(@options[:starting_non_gold_tokens][@players.count])
+      @bank.seed_bank({:options=> @options, :player_count => @players.count})
       @nobles = noble_sample(@options[:nobles_available][@players.count])
       @display = Hash.new()
       @deck.each { |level, subdeck| @display[level] = subdeck.pop(@options[:display_cards_per_row]) }
