@@ -100,4 +100,5 @@ describe SplendorGame::Tableau do
     end
   end
   
+  
 end
