@@ -105,7 +105,7 @@ module SplendorGame
         @deck[card.level] << card
       end
       # shuffle them
-      @deck.each { |smaller_deck| smaller_deck.shuffle! }
+      @deck.each { |_deck_num, smaller_deck| smaller_deck.shuffle! }
     end
     
     def noble_sample(number_of_cards_to_load)
