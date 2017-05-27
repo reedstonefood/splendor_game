@@ -82,6 +82,7 @@ module SplendorGame
         end
       end
       #TODO nobles....
+      turn.end_turn
       @@cli.say "*** END OF TURN***"
       command_result==:exit ? false : true
     end

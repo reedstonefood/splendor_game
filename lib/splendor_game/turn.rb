@@ -102,9 +102,12 @@ module SplendorGame
       @noble_claimed = true
     end
   
-    def restock_display # make sure there are 4 cards showing from each deck, assuming there are any left
-      @game.deck.find_all {@game.display[level].count < Game::DISPLAY_CARDS_PER_ROW }.each do |level2, subdeck2|
-        @game.display[level2] << subdeck2.pop if subdeck2.count > 0
+    def end_turn # make sure there are 4 cards showing from each deck, assuming there are any left
+      #assumption : max 1 card is missing from each row
+      nonfull_rows = @game.display.select { |_level, subdeck| subdeck.count < @game.options[:display_cards_per_row] }
+      nonfull_rows.each do |row_num, display_row|
+        relevant_deck = @game.deck[row_num]
+        display_row << relevant_deck.pop if relevant_deck.count > 0
       end
     end
     

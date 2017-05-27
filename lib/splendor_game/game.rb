@@ -11,9 +11,6 @@ module SplendorGame
 
 
   class Game
-    #DISPLAY_CARDS_PER_ROW = 4
-    #WINNING_SCORE = 15
-    #MIN_TO_TAKE_TWO = 4
     attr_reader :deck, :bank, :players, :nobles, :options, :display, :turns
     def initialize(user_options = nil)
       @options = Options.new(user_options).give_options
