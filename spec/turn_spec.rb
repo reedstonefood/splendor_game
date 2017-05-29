@@ -29,7 +29,7 @@ describe SplendorGame::Turn do
   end
   context "reserve card" do
     before :each do
-      @t.reserve_card(@g.display[1][0])
+      @t.reserve_displayed_card(@g.display[1][0])
     end
     it "gives the player a gold token" do
       expect(@t.player.tableau.tokens).to eq({:gold =>1})

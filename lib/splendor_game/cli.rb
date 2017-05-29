@@ -63,7 +63,9 @@ module SplendorGame
     end
     
     def reserve_card(args)
-      if args[:turn].reserve_card(args[:card])
+      if args[:card].is_a?(SplendorGame::Card) && args[:turn].reserve_displayed_card(args[:card])
+        true
+      elsif args[:card].is_a?(Integer) && args[:turn].reserve_random_card(args[:card])
         true
       else
         @@cli.say "Sorry, you can't reserve that (maybe you have reserved too many cards)"
@@ -155,12 +157,13 @@ module SplendorGame
     
     def choose_card(mode, player = nil)
       displayed_cards_list = @g.all_displayed_cards.collect { |c| [card_display(c),c] }.to_h
-      #TODO this is just a placeholder... you cannot currently reserve a random card
       if mode==:reserve
         (1..3).each { |i| displayed_cards_list["Reserve mystery level #{i} card"]= i }
       end
       if mode==:buy
-        player.tableau.reserved_cards.each { |c| displayed_cards_list["R1 - #{card_display(c)}"]= c }
+        player.tableau.reserved_cards.each_with_index do |card, index| 
+          displayed_cards_list["R#{index+1} - #{card_display(card)}"]= card
+        end
       end
       @@cli.choose do |menu|
         menu.prompt = "Which card do you want to #{mode}? "

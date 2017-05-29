@@ -38,17 +38,36 @@ module SplendorGame
       @action_done = true
     end
     
-    def reserve_card(card) # put cards in to player's reserved set. Remove card from display
+    def reserve_card_checks?
       return false if @action_done
       return false if !@player.tableau.can_reserve_card?
-      return false if !@game.display.flatten(2).include?(card)
-      @player.tableau.reserve_card(card)
-      display_row = @game.display[card.level]
-      display_row.delete_at(display_row.index(card) || display_row.length)
+      true
+    end
+    
+    def give_gold_token
       if @game.bank.tokens[:gold] > 0 && @player.tableau.token_space_remaining > 0
         @game.bank.remove_token(:gold)
         @player.tableau.add_token(:gold)
       end
+    end
+    
+    def reserve_displayed_card(card) # put cards in to player's reserved set. Remove card from display
+      return false if !reserve_card_checks?
+      return false if !@game.display.flatten(2).include?(card)
+      @player.tableau.reserve_card(card)
+      display_row = @game.display[card.level]
+      display_row.delete_at(display_row.index(card) || display_row.length)
+      give_gold_token
+      @action_done = true
+    end
+    
+    def reserve_random_card(deck_number)
+      return false if !reserve_card_checks?
+      return false if @game.deck[deck_number].nil?
+      return false if @game.deck[deck_number].count==0
+      card = @game.deck[deck_number].pop
+      @player.tableau.reserve_card(card)
+      give_gold_token
       @action_done = true
     end
     
