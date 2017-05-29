@@ -24,3 +24,4 @@ ratings:
   - "**.rb"
 exclude_paths:
 - spec/
+- lib/splendor_game/load_cards.rb
