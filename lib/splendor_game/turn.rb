@@ -111,14 +111,21 @@ module SplendorGame
   
     def claim_noble(noble) # Move noble from bank to player, assuming it's affordable
       return false if @noble_claimed # you can only claim 1 per turn
-      return false if !@game.nobles.include?(noble)
-      return false if noble.class.name!='SplendorGame::Noble'
-      noble.cost.each do |c,v|
-        return false if @player.tableau.colours_on_cards(c) < v
-      end
+      return false if !noble_affordable?(noble)
       @game.nobles.delete_at(@game.nobles.index(noble) || display_row.length)
       @player.nobles << noble
       @noble_claimed = true
+    end
+  
+    def claimable_nobles
+      @game.nobles.find_all { |noble| noble_affordable?(noble) }
+    end
+    
+    def noble_affordable?(noble)
+      noble.cost.each do |colour, cost|
+        return false if @player.tableau.colours_on_cards(colour) < cost
+      end
+      true
     end
   
     def end_turn # make sure there are 4 cards showing from each deck, assuming there are any left

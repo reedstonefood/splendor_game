@@ -39,6 +39,7 @@ module SplendorGame
       @@cli.say "<%= color('(r)eserve', BOLD) %> = Reserve a card"
       @@cli.say "<%= color('(t)okens', BOLD) %> = pick up tokens from the bank"
       @@cli.say "<%= color('(h)elp', BOLD) %> = This help page"
+      #TODO - display nobles!
       @@cli.say "<%= color('e(x)it', BOLD) %> = Exit the program"
     end
     
@@ -83,7 +84,7 @@ module SplendorGame
           break
         end
       end
-      #TODO nobles....
+      consider_nobles(turn)
       turn.end_turn
       @@cli.say "*** END OF TURN***"
       command_result==:exit ? false : true
@@ -112,7 +113,8 @@ module SplendorGame
     
     
     def card_display(card)
-      text = "#{card.points}pts (#{card.colour}) => "
+      text = "#{card.points}pts "
+      text << "(#{card.colour}) => " if card.instance_variable_defined?(:@colour)
       card.cost.each do |k,v|
         text << "#{v} x #{k}, "
       end
@@ -194,6 +196,22 @@ module SplendorGame
       @@cli.say "Oops, that's not a valid selection" if !response
     end
     
+    def consider_nobles(turn)
+      possibles = turn.claimable_nobles
+      return false if possibles.empty?
+      return assign_only_valid_noble(turn, possibles) if possibles.count==1
+      @@cli.ask "You qualify for multiple nobles! Pick one..."
+      displayed_nobles_list = possibles.collect { |c| [card_display(c),c] }.to_h
+      @@cli.choose do |menu|
+        menu.prompt = "You qualify for multiple nobles! Pick one... "
+        menu.choices(*displayed_nobles_list.keys) do |chosen_noble|
+          turn.claim_noble(chosen_noble)
+          @@cli.say "Nice, you chose #{chosen_noble}."
+        end
+      end
+      
+    end
+    
     def end_game_detail
       @@cli.say "The game consisted of #{@g.turns.count} turns"
       @@cli.ask "It's the end of the game. Press enter to end the program."
@@ -211,6 +229,18 @@ module SplendorGame
         end #end of the game - only reachable by throwing an :exit
       end
       end_game_detail
+    end
+    
+    private
+    def assign_only_valid_noble(turn,noble_array)
+      the_noble = noble_array.first
+      if !turn.claim_noble(the_noble)
+        @@cli.say "Looks like you qualify for a noble, but it didn't work"
+        return false
+      else
+        @@cli.say "You have been given a noble! #{the_noble.points} points"
+        return true
+      end
     end
     
   end
