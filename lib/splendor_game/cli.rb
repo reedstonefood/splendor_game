@@ -37,9 +37,9 @@ module SplendorGame
       @@cli.say "************************ HELP! ************************"
       @@cli.say "<%= color('(b)uy', BOLD) %> = Buy a card"
       @@cli.say "<%= color('(r)eserve', BOLD) %> = Reserve a card"
-      @@cli.say "<%= color('(t)okens', BOLD) %> = pick up tokens from the bank"
+      @@cli.say "<%= color('(t)okens', BOLD) %> = Pick up tokens from the bank"
+      @@cli.say "<%= color('(n)obles', BOLD) %> = Look at the available nobles"
       @@cli.say "<%= color('(h)elp', BOLD) %> = This help page"
-      #TODO - display nobles!
       @@cli.say "<%= color('e(x)it', BOLD) %> = Exit the program"
     end
     
@@ -100,6 +100,8 @@ module SplendorGame
         reserve_card(:card => card, :turn => turn) if card
       when input[0]=='h'
         puts_help
+      when input[0]=='n'
+        display_nobles
       when input[0]=='t'
         @@cli.say bank_details + " "
         take_tokens(turn)
@@ -210,6 +212,12 @@ module SplendorGame
         end
       end
       
+    end
+    
+    def display_nobles
+      @g.nobles.each do |noble|
+        @@cli.say "NOBLE - #{card_display(noble)}"
+      end
     end
     
     def end_game_detail
