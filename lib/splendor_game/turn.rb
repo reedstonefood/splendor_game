@@ -81,6 +81,7 @@ module SplendorGame
       colour = colour.to_sym
       return false if !validate_token_pickup?(colour)
       return false if @game.bank.tokens[colour] < @game.options[:min_to_take_two]
+      return false if @player.tableau.token_space_remaining < 2
       2.times { @player.tableau.add_token(colour) }
       2.times { @game.bank.remove_token(colour) }
       @action_done = true
@@ -92,6 +93,7 @@ module SplendorGame
       return false if colours.count != 3
       return false if colours.uniq.length != colours.length
       return false if colours.select { |c| @game.bank.tokens[c]==0}.length > 0
+      return false if @player.tableau.token_space_remaining < 3
       colours.each do |c|
         @player.tableau.add_token(c)
         @game.bank.remove_token(c)

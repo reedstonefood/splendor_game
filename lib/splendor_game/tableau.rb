@@ -5,7 +5,7 @@ module SplendorGame
     @@max_reserved_cards = 3
     attr_reader :cards, :tokens, :reserved_cards
     
-    def initialize(token_limit = 10)
+    def initialize(token_limit)
       @cards = Array.new()
       @tokens = Hash.new(0)
       @unlimited = token_limit <= 0 ? true : false

@@ -4,10 +4,10 @@ module SplendorGame
 
     attr_reader :name, :turn_order, :tableau, :nobles
   
-    def initialize(name, turn_order)
+    def initialize(name, turn_order, token_limit)
       @name = name
       @turn_order = turn_order
-      @tableau = Tableau.new()
+      @tableau = Tableau.new(token_limit)
       @nobles = Array.new()
     end
 

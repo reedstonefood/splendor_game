@@ -179,12 +179,12 @@ module SplendorGame
       end
     end
     
-    def validate_token_choice(t)
-      return false if [2,3].include?(t.count)
-      t.each { |c| return false if !VALID_COLOUR_SYMBOLS.include?(c.upcase) || c==:gold}
-      return false if t.count==2 && t[0] != t[1]
-      true
-    end
+    #def validate_token_choice(t)
+    #  return false if [2,3].include?(t.count)
+    #  t.each { |c| return false if !VALID_COLOUR_SYMBOLS.include?(c.upcase) || c==:gold}
+    #  return false if t.count==2 && t[0] != t[1]
+    #  true
+    #end
     
     def take_tokens(turn)
       input = @@cli.ask "Which tokens would you like (CSV format)? "

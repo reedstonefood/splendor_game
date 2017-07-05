@@ -2,7 +2,8 @@ require "spec_helper"
 
 describe SplendorGame::Tableau do
 
-  let(:t) { SplendorGame::Tableau.new }
+  let(:max_tokens) {10}
+  let(:t) { SplendorGame::Tableau.new(max_tokens) }
   it "cards is an empty array" do
     expect(t.cards).to be_a_kind_of(Array)
     expect(t.cards).to be_empty
@@ -12,7 +13,7 @@ describe SplendorGame::Tableau do
     expect(t.tokens).to be_empty
   end
   it "correctly models the maximum number of cards" do
-    expect(t.token_space_remaining).to eq(10)
+    expect(t.token_space_remaining).to eq(max_tokens)
   end
   
   context "add a blue token" do

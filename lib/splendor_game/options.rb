@@ -7,6 +7,7 @@ module SplendorGame
     DISPLAY_CARDS_PER_ROW = 4
     WINNING_SCORE = 15
     MIN_TO_TAKE_TWO = 4
+    PLAYER_TOKEN_LIMIT = 10
     attr_reader :deck, :bank, :players, :nobles, :options, :display
     def initialize(user_options = nil)
       if user_options.is_a?(Hash)
@@ -32,6 +33,7 @@ module SplendorGame
       output[:starting_gold_tokens] = STARTING_GOLD_TOKENS
       output[:starting_non_gold_tokens] = STARTING_NON_GOLD_TOKENS
       output[:nobles_available] = NOBLES_AVAILABLE
+      output[:player_token_limit] = PLAYER_TOKEN_LIMIT
       output
     end
     

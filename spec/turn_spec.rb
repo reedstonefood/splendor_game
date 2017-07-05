@@ -73,6 +73,11 @@ describe SplendorGame::Turn do
       expect(@t.player.tableau.tokens[:red]).to eq(2)
       expect(@g.bank.tokens[:red]).to eq(initial_reds-2)
     end
+    it "won't let you if it means you haveing more tokens than the limit" do
+      token_limit = SplendorGame::Options::PLAYER_TOKEN_LIMIT
+      (token_limit-1).times { @t.player.tableau.add_token(:red) }
+      expect(@t.take_two_tokens_same_colour(:green)).to eq(false)
+    end
   end
   context "pick three different tokens" do
     it "won't let you if the colours aren't in the bank" do
@@ -92,6 +97,11 @@ describe SplendorGame::Turn do
       expect(@t.take_different_tokens([:green, :red, :blue])).not_to eq(false)
       expect(@t.player.tableau.token_count).to eq(3)
       expect(@g.bank.token_count).to eq(inital_tokens-3)
+    end
+    it "won't let you if it means you haveing more tokens than the limit" do
+      token_limit = SplendorGame::Options::PLAYER_TOKEN_LIMIT
+      (token_limit-2).times { @t.player.tableau.add_token(:red) }
+      expect(@t.take_different_tokens([:green, :red, :blue])).to eq(false)
     end
   end
   context "action return tokens" do

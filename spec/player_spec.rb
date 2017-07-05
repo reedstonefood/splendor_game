@@ -2,7 +2,8 @@ require "spec_helper"
 
 describe SplendorGame::Player do
 
-  let(:p) { SplendorGame::Player.new("Bob", 1) }
+  let(:max_tokens) {10}
+  let(:p) { SplendorGame::Player.new("Bob", 1, max_tokens) }
   it "returns name correctly" do
     expect(p.name).to eq("Bob")
   end

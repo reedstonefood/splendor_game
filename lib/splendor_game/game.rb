@@ -22,7 +22,7 @@ module SplendorGame
     
     def add_player(player_name)
       return false if @players.count >= MAX_PLAYER_COUNT
-      @players << Player.new(player_name, @players.count+1)
+      @players << Player.new(player_name, @players.count+1,@options[:player_token_limit])
       true
     end
     
