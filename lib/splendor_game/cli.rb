@@ -206,9 +206,9 @@ module SplendorGame
       displayed_nobles_list = possibles.collect { |c| [card_display(c),c] }.to_h
       @@cli.choose do |menu|
         menu.prompt = "You qualify for multiple nobles! Pick one... "
-        menu.choices(*displayed_nobles_list.keys) do |chosen_noble|
-          turn.claim_noble(chosen_noble)
-          @@cli.say "Nice, you chose #{chosen_noble}."
+        menu.choices(*displayed_nobles_list.keys) do |chosen|
+          turn.claim_noble(displayed_nobles_list[chosen])
+          @@cli.say "Nice, you chose #{chosen}."
         end
       end
       
