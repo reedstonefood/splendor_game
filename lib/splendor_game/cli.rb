@@ -202,7 +202,6 @@ module SplendorGame
       possibles = turn.claimable_nobles
       return false if possibles.empty?
       return assign_only_valid_noble(turn, possibles) if possibles.count==1
-      @@cli.ask "You qualify for multiple nobles! Pick one..."
       displayed_nobles_list = possibles.collect { |c| [card_display(c),c] }.to_h
       @@cli.choose do |menu|
         menu.prompt = "You qualify for multiple nobles! Pick one... "

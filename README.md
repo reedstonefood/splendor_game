@@ -8,18 +8,18 @@ Find out more about the game at [BoardGameGeek](https://boardgamegeek.com/boardg
 
 ## Installation
 
-Not yet ready for use - still in development.
+    gem install splendor_game
 
 ## Usage
 
-There is a simple CLI you can use. Simply run the following in irb or put in a .rb file and run it.
+There is a simple CLI you can use, which requires [Highline](https://github.com/JEG2/highline). Simply run the following in irb or put in a .rb file and run it.
 
 ```ruby
 require 'splendor_game'
 SplendorGame::CLI.new
 ```
 
-Or, hook this up to any front end you might desire to use.
+Or, hook this up to any front end you might desire to use. If you do this, I'd be interested in knowing the details.
 
 ## Contributing
 
@@ -27,7 +27,7 @@ Bug reports and pull requests are welcome on GitHub at https://github.com/reedst
 
 ## With thanks...
 
-Whoever typed up a list of all the cards in the board game into this spreadsheet... https://drive.google.com/file/d/0B4yyYVH10iE5VlBFME9QelBVUnc/edit
+Whoever typed up a list of all the cards in the board game into [this spreadsheet](https://drive.google.com/file/d/0B4yyYVH10iE5VlBFME9QelBVUnc/edit). 
 
 ## License
 
